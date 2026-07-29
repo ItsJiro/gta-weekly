@@ -1,0 +1,40 @@
+name: Update GTA Showrooms
+
+on:
+  schedule:
+    # Runs at 09:00 UTC every Thursday (0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu)
+    - cron: '0 9 * * 4'
+  workflow_dispatch: # Allows you to trigger the script manually from the GitHub Actions tab
+
+jobs:
+  scrape-and-commit:
+    runs-on: ubuntu-latest
+
+    # Required to allow the bot to push the updated JSON file back to your repo
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Install Dependencies
+        # If you have a package.json, change this to `npm ci`
+        run: npm ci
+
+      - name: Run Scraper
+        run: node scrape.js
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add showrooms.json
+          # The '|| exit 0' prevents the action from failing if the JSON hasn't changed
+          git commit -m "chore: auto-update showrooms.json" || exit 0
+          git push
