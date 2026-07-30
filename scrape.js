@@ -15,16 +15,13 @@ function resolveUrl(urlPath) {
 const delay = ms => new Promise(res => setTimeout(res, ms));
 
 // Helper to safely extract text from GTABase's specific list structures
-function extractStat($v, selector, labelToReplace) {
-  // Looks for the specific div.field-value inside the provided li selector
-  let text = $v(`${selector} div.field-value`).text().trim();
+function extractStat($v, selector, labelToReplace, valueSelector = 'div.field-value') {
+  let text = $v(`${selector} ${valueSelector}`).text().trim();
 
-  // Fallback in case the structure changes slightly
   if (!text) {
       text = $v(selector).text().replace(labelToReplace, '').trim();
   }
 
-  // Clean up excessive spaces or line breaks
   return text.replace(/\s+/g, ' ') || "Unknown";
 }
 
@@ -50,9 +47,7 @@ async function scrapeShowrooms() {
       premiumTestRide: null
     };
 
-    // Keep a flat array of references so we can easily loop through them for the deep scrape later
     const vehiclesToScrape = [];
-
     const $showroomsSection = $('#showrooms-test-rides').closest('.field-entry');
 
     // 2. Parse the main page and build the base objects
@@ -72,7 +67,8 @@ async function scrapeShowrooms() {
       const vehicleObj = {
         name,
         manufacturer: null,
-        acquisition: null, // New field for the dealership
+        acquisition: null,
+        price: null, // New field for the vehicle price
         class: null,
         topSpeed: null,
         acceleration: null,
@@ -80,12 +76,10 @@ async function scrapeShowrooms() {
         image: resolveUrl($item.find('.item-image img').attr('src'))
       };
 
-      // Add to our flat list for stat scraping
       if (vehicleObj.url) {
         vehiclesToScrape.push(vehicleObj);
       }
 
-      // Slot the object into the correct JSON category (passed by reference)
       if (typeText.includes('podium vehicle')) {
         showroomsData.podiumVehicle = vehicleObj;
       } else if (typeText.includes('prize ride')) {
@@ -124,22 +118,16 @@ async function scrapeShowrooms() {
             });
             const $v = cheerio.load(vehicleData);
 
-            // Extract Manufacturer (Uses :not(.purchase) to exclude the dealership name)
             vehicle.manufacturer = extractStat($v, 'li.field-entry.manufacturer:not(.purchase)', 'Manufacturer');
-
-            // Extract Acquisition (Dealership)
             vehicle.acquisition = extractStat($v, 'li.field-entry.purchase.manufacturer', 'Acquisition');
 
-            // Extract Vehicle Class
+            // Extract Price using `span.field-value` instead of `div.field-value`
+            vehicle.price = extractStat($v, 'li.field-entry.price', 'Price', 'span.field-value');
+
             vehicle.class = extractStat($v, 'li.field-entry.vehicle-class', 'Vehicle Class');
-
-            // Extract Speed
             vehicle.topSpeed = extractStat($v, 'li.field-entry.speed.speed', 'Speed');
-
-            // Extract Acceleration
             vehicle.acceleration = extractStat($v, 'li.field-entry.acceleration.acceleration', 'Acceleration');
 
-            // Wait 1.5 seconds so GitHub Actions doesn't trigger a firewall block
             await delay(1500);
 
         } catch (err) {
