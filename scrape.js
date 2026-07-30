@@ -19,7 +19,7 @@ function cleanImageUrl(urlPath) {
   return fullUrl
     .replace(/_resized/g, '')
     .replace(/\/resized\//g, '/')
-    .replace(/_+\d+x\d+/g, ''); // Dynamically catches __320x180, __256x128, _320x180, etc.
+    .replace(/_+\d+x\d+/g, ''); // Dynamically strips any resolution tags (__320x180, __256x128, etc.)
 }
 
 // Helper to prevent getting IP banned by GTABase
@@ -58,10 +58,9 @@ async function scrapeShowrooms() {
       propertyDiscounts: []
     };
 
-    // We will store every vehicle object reference here to update them later
     const allScrapedVehicles = [];
 
-    // --- PARSE SHOWROOMS & TEST RIDES ---
+    // --- 2. PARSE SHOWROOMS & TEST RIDES ---
     const $showroomsSection = $('#showrooms-test-rides').closest('.field-entry');
 
     $showroomsSection.find('li.gta-bonuses').each((_, itemEl) => {
@@ -105,21 +104,33 @@ async function scrapeShowrooms() {
       }
     });
 
-    // Backwards tagging fix
+    // Backwards tagging fix for showrooms
     if (weeklyData.luxuryAutos.length > weeklyData.premiumDeluxeMotorsport.length) {
         const temp = weeklyData.premiumDeluxeMotorsport;
         weeklyData.premiumDeluxeMotorsport = weeklyData.luxuryAutos;
         weeklyData.luxuryAutos = temp;
     }
 
-    // --- PARSE IN-GAME DISCOUNTS ---
+    // --- 3. PARSE IN-GAME DISCOUNTS ---
     $('li.gta-bonuses.item-scale').each((_, itemEl) => {
       const $item = $(itemEl);
 
-      // EXCLUDE GTA+ Benefits by checking the main header of its section
-      const sectionLabel = $item.closest('.field-entry').find('.field-label, h2, h3').first().text().toLowerCase();
-      if (sectionLabel.includes('gta+')) {
-          return;
+      // EXCLUDE SHOWROOM ITEMS from being treated as discounts
+      if ($item.closest('#showrooms-test-rides').length > 0) {
+        return;
+      }
+
+      // EXCLUDE GTA+ BENEFITS (by checking section container HTML or headers for gta+ benefits URL)
+      const $section = $item.closest('.field-entry, .section');
+      const sectionHtml = $section.html() || '';
+      const sectionText = $section.find('.field-label, h2, h3, h4').text().toLowerCase();
+
+      if (
+        sectionHtml.includes('/gta+-monthly-benefits') ||
+        sectionText.includes('gta+') ||
+        $item.find('a[href*="gta+-monthly-benefits"]').length > 0
+      ) {
+        return; // Skip GTA+ items
       }
 
       const $titleLink = $item.find('h3.contentheading a, .contentheading a').first();
@@ -133,24 +144,26 @@ async function scrapeShowrooms() {
 
       if (!url) return;
 
-      // Extract specific pricing properties based on your DOM targets
-      const discountPercentage = $item.find('div.discounted-price span.badge.new').text().trim();
-      const regularPrice = $item.find('div.article-info s').text().trim();
+      // Extract discount & price details
+      const discountPercentage = $item.find('div.discounted-price span.badge.new').text().trim() || null;
 
-      // Clone the discounted-price div, delete the badge child, and read the remaining text
       const $discountDivClone = $item.find('div.discounted-price').clone();
       $discountDivClone.find('span.badge').remove();
-      const discountedPrice = $discountDivClone.text().trim();
+      const discountedPrice = $discountDivClone.text().trim() || null;
+
+      // STRICT CHECK: Must actually be a discount item (must have percentage or discounted price)
+      if (!discountPercentage && !discountedPrice) {
+        return;
+      }
 
       if (url.includes('/vehicles/')) {
         const vehicleDiscountObj = {
           name,
-          discount: discountPercentage || null,
-          regularPrice: regularPrice || null,
-          discountedPrice: discountedPrice || null,
+          discount: discountPercentage,
+          discountedPrice: discountedPrice,
           manufacturer: null,
           acquisition: null,
-          basePrice: null, // From the deep-scrape (renamed to basePrice to avoid confusion)
+          basePrice: null, // Populated via deep scrape
           class: null,
           topSpeed: null,
           acceleration: null,
@@ -164,16 +177,15 @@ async function scrapeShowrooms() {
       } else if (url.includes('/properties/') || url.includes('/property-types/')) {
         weeklyData.propertyDiscounts.push({
           name,
-          discount: discountPercentage || null,
-          regularPrice: regularPrice || null,
-          discountedPrice: discountedPrice || null,
+          discount: discountPercentage,
+          discountedPrice: discountedPrice,
           url,
           image
         });
       }
     });
 
-    // --- DEEP SCRAPE FOR VEHICLES ---
+    // --- 4. DEEP SCRAPE FOR VEHICLES ---
     const uniqueUrls = [...new Set(allScrapedVehicles.map(v => v.url).filter(Boolean))];
 
     console.log(`Found ${uniqueUrls.length} unique vehicles to scrape stats for...`);
@@ -200,12 +212,14 @@ async function scrapeShowrooms() {
             instancesToUpdate.forEach(vehicle => {
                 vehicle.manufacturer = manufacturer;
                 vehicle.acquisition = acquisition;
-                // If it's a discount object, we store deep-scrape price as 'basePrice'
+
+                // Assign to basePrice if it's a discount object, or price if it's a showroom object
                 if (vehicle.hasOwnProperty('basePrice')) {
                     vehicle.basePrice = price;
                 } else {
                     vehicle.price = price;
                 }
+
                 vehicle.class = vClass;
                 vehicle.topSpeed = topSpeed;
                 vehicle.acceleration = acceleration;
@@ -218,6 +232,7 @@ async function scrapeShowrooms() {
         }
     }
 
+    // Save final output
     fs.writeFileSync('showrooms.json', JSON.stringify(weeklyData, null, 2), 'utf-8');
     console.log('\n✅ Successfully compiled all data and saved to showrooms.json');
 
