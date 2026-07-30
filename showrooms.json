@@ -1,10 +1,410 @@
 {
-  "podiumVehicle": null,
-  "prizeRide": null,
-  "premiumDeluxeMotorsport": [],
-  "luxuryAutos": [],
-  "testRides": [],
-  "premiumTestRide": null,
-  "vehicleDiscounts": [],
-  "propertyDiscounts": []
+  "podiumVehicle": {
+    "name": "Cypher",
+    "manufacturer": "Übermacht",
+    "acquisition": "Legendary Motorsport",
+    "price": "$1,550,000",
+    "class": "Sports, Tuners",
+    "topSpeed": "79.33",
+    "acceleration": "81.50",
+    "url": "https://www.gtabase.com/grand-theft-auto-v/vehicles/cypher",
+    "image": "https://www.gtabase.com/images/jch-optimize/ng/images_gta-5_vehicles_sports_main_cypher.webp"
+  },
+  "prizeRide": {
+    "name": "Boor",
+    "manufacturer": "Karin",
+    "acquisition": "Southern S.A. Super Autos",
+    "price": "$1,280,000",
+    "class": "Off-Road",
+    "topSpeed": "79.95",
+    "acceleration": "66.75",
+    "url": "https://www.gtabase.com/grand-theft-auto-v/vehicles/boor",
+    "image": "https://www.gtabase.com/images/jch-optimize/ng/images_gta-5_vehicles_off-road_main_boor.webp"
+  },
+  "premiumDeluxeMotorsport": [
+    {
+      "name": "Broadway",
+      "manufacturer": "Classique",
+      "acquisition": "Legendary Motorsport",
+      "price": "$925,000",
+      "class": "Muscle",
+      "topSpeed": "67.61",
+      "acceleration": "48.75",
+      "url": "https://www.gtabase.com/grand-theft-auto-v/vehicles/broadway",
+      "image": "https://www.gtabase.com/images/jch-optimize/ng/images_gta-5_vehicles_muscle_main_broadway.webp"
+    },
+    {
+      "name": "Blista Kanjo",
+      "manufacturer": "Dinka",
+      "acquisition": "Southern S.A. Super Autos",
+      "price": "$580,000",
+      "class": "Compacts",
+      "topSpeed": "75.12",
+      "acceleration": "80.00",
+      "url": "https://www.gtabase.com/grand-theft-auto-v/vehicles/blista-kanjo",
+      "image": "https://www.gtabase.com/images/gta-5/vehicles/compacts/main/blista-kanjo.jpg"
+    },
+    {
+      "name": "Chavos V6",
+      "manufacturer": "Dinka",
+      "acquisition": "Southern S.A. Super Autos",
+      "price": "$1,420,000",
+      "class": "Sedans",
+      "topSpeed": "78.34",
+      "acceleration": "68.50",
+      "url": "https://www.gtabase.com/vehicles/grand-theft-auto-v/chavos-v6",
+      "image": "https://www.gtabase.com/images/jch-optimize/ng/igallery_gta5-database_chavos-v6-1080.avif"
+    },
+    {
+      "name": "Coquette D1",
+      "manufacturer": "Invetero",
+      "acquisition": "Legendary Motorsport",
+      "price": "$1,500,000",
+      "class": "Sports Classics",
+      "topSpeed": "85.85",
+      "acceleration": "69.50",
+      "url": "https://www.gtabase.com/grand-theft-auto-v/vehicles/coquette-d1",
+      "image": "https://www.gtabase.com/images/jch-optimize/ng/images_gta-5_vehicles_sports-classic_coquette-d1.avif"
+    },
+    {
+      "name": "Z-Type",
+      "manufacturer": "Truffade",
+      "acquisition": "Legendary Motorsport",
+      "price": "$950,000",
+      "class": "Sports Classics",
+      "topSpeed": "75.12",
+      "acceleration": "55.00",
+      "url": "https://www.gtabase.com/grand-theft-auto-v/vehicles/truffade-z-type",
+      "image": "https://www.gtabase.com/images/gta-5/vehicles/sports-classic/main/z-type.jpg"
+    }
+  ],
+  "luxuryAutos": [
+    {
+      "name": "Merula",
+      "manufacturer": "Albany",
+      "acquisition": "Southern S.A. Super Autos",
+      "price": "$1,394,000",
+      "class": "Sedans",
+      "topSpeed": "91.21",
+      "acceleration": "82.50",
+      "url": "https://www.gtabase.com/vehicles/grand-theft-auto-v/merula",
+      "image": "https://www.gtabase.com/igallery/gta5-database/merula-360.jpg"
+    },
+    {
+      "name": "E-Stride",
+      "manufacturer": "Ocelot",
+      "acquisition": "Southern S.A. Super Autos",
+      "price": "$1,425,000",
+      "class": "SUVs",
+      "topSpeed": "84.78",
+      "acceleration": "31.50",
+      "url": "https://www.gtabase.com/vehicles/grand-theft-auto-v/e-stride",
+      "image": "https://www.gtabase.com/igallery/gta5-database/e-stride-360.jpg"
+    }
+  ],
+  "testRides": [
+    {
+      "name": "Ruiner ZZ-8",
+      "manufacturer": "Imponte",
+      "acquisition": "Southern S.A. Super Autos",
+      "price": "$1,320,000",
+      "class": "Muscle",
+      "topSpeed": "81.02",
+      "acceleration": "77.12",
+      "url": "https://www.gtabase.com/grand-theft-auto-v/vehicles/ruiner-zz-8",
+      "image": "https://www.gtabase.com/images/jch-optimize/ng/images_gta-5_vehicles_muscle_main_ruiner-zz-8.webp"
+    },
+    {
+      "name": "Adder",
+      "manufacturer": "Truffade",
+      "acquisition": "Legendary Motorsport",
+      "price": "$1,000,000",
+      "class": "Super",
+      "topSpeed": "85.85",
+      "acceleration": "80.00",
+      "url": "https://www.gtabase.com/grand-theft-auto-v/vehicles/truffade-adder",
+      "image": "https://www.gtabase.com/images/gta-5/vehicles/super/main/adder.jpg"
+    },
+    {
+      "name": "Uranus LozSpeed",
+      "manufacturer": "Vapid",
+      "acquisition": "Southern S.A. Super Autos",
+      "price": "$1,140,000",
+      "class": "Sports Classics",
+      "topSpeed": "83.17",
+      "acceleration": "81.13",
+      "url": "https://www.gtabase.com/vehicles/grand-theft-auto-v/uranus-lozspeed",
+      "image": "https://www.gtabase.com/images/jch-optimize/ng/igallery_gta5-database_uranus-lozspeed-360.avif"
+    }
+  ],
+  "premiumTestRide": {
+    "name": "Entity MT",
+    "manufacturer": "Overflod",
+    "acquisition": "Legendary Motorsport",
+    "price": "$2,355,000",
+    "class": "Super",
+    "topSpeed": "92.28",
+    "acceleration": "88.62",
+    "url": "https://www.gtabase.com/grand-theft-auto-v/vehicles/entity-mt",
+    "image": "https://www.gtabase.com/images/jch-optimize/ng/images_gta-5_vehicles_super_main_entity-mt.webp"
+  },
+  "vehicleDiscounts": [
+    {
+      "name": "Kuruma",
+      "discount": "-60%",
+      "discountedPrice": "$50,540",
+      "manufacturer": "Karin",
+      "acquisition": "Southern S.A. Super Autos",
+      "basePrice": "$126,350",
+      "class": "Sports",
+      "topSpeed": "78.87",
+      "acceleration": "77.50",
+      "url": "https://www.gtabase.com/grand-theft-auto-v/vehicles/karin-kuruma",
+      "image": "https://www.gtabase.com/images/gta-5/vehicles/sports/main/kuruma.jpg"
+    },
+    {
+      "name": "Kuruma (Armored)",
+      "discount": "-60%",
+      "discountedPrice": "$279,300",
+      "manufacturer": "Karin",
+      "acquisition": "Bonus Reward, Southern S.A. Super Autos",
+      "basePrice": "$698,250",
+      "class": "Sports",
+      "topSpeed": "78.87",
+      "acceleration": "77.50",
+      "url": "https://www.gtabase.com/grand-theft-auto-v/vehicles/karin-kuruma-armored",
+      "image": "https://www.gtabase.com/images/gta-5/vehicles/sports/main/kuruma-armored.jpg"
+    },
+    {
+      "name": "Broadway",
+      "discount": "-30%",
+      "discountedPrice": "$647,500",
+      "manufacturer": "Classique",
+      "acquisition": "Legendary Motorsport",
+      "basePrice": "$925,000",
+      "class": "Muscle",
+      "topSpeed": "67.61",
+      "acceleration": "48.75",
+      "url": "https://www.gtabase.com/grand-theft-auto-v/vehicles/broadway",
+      "image": "https://www.gtabase.com/images/jch-optimize/ng/images_gta-5_vehicles_muscle_main_broadway.webp"
+    },
+    {
+      "name": "Blista Kanjo",
+      "discount": "-30%",
+      "discountedPrice": "$406,000",
+      "manufacturer": "Dinka",
+      "acquisition": "Southern S.A. Super Autos",
+      "basePrice": "$580,000",
+      "class": "Compacts",
+      "topSpeed": "75.12",
+      "acceleration": "80.00",
+      "url": "https://www.gtabase.com/grand-theft-auto-v/vehicles/blista-kanjo",
+      "image": "https://www.gtabase.com/images/gta-5/vehicles/compacts/main/blista-kanjo.jpg"
+    },
+    {
+      "name": "Chavos V6",
+      "discount": "-30%",
+      "discountedPrice": "$994,000",
+      "manufacturer": "Dinka",
+      "acquisition": "Southern S.A. Super Autos",
+      "basePrice": "$1,420,000",
+      "class": "Sedans",
+      "topSpeed": "78.34",
+      "acceleration": "68.50",
+      "url": "https://www.gtabase.com/vehicles/grand-theft-auto-v/chavos-v6",
+      "image": "https://www.gtabase.com/images/jch-optimize/ng/igallery_gta5-database_chavos-v6-1080.avif"
+    },
+    {
+      "name": "Ruiner ZZ-8",
+      "discount": "-30%",
+      "discountedPrice": "$924,000",
+      "manufacturer": "Imponte",
+      "acquisition": "Southern S.A. Super Autos",
+      "basePrice": "$1,320,000",
+      "class": "Muscle",
+      "topSpeed": "81.02",
+      "acceleration": "77.12",
+      "url": "https://www.gtabase.com/grand-theft-auto-v/vehicles/ruiner-zz-8",
+      "image": "https://www.gtabase.com/images/jch-optimize/ng/images_gta-5_vehicles_muscle_main_ruiner-zz-8.webp"
+    },
+    {
+      "name": "Coquette D1",
+      "discount": "-30%",
+      "discountedPrice": "$1,050,000",
+      "manufacturer": "Invetero",
+      "acquisition": "Legendary Motorsport",
+      "basePrice": "$1,500,000",
+      "class": "Sports Classics",
+      "topSpeed": "85.85",
+      "acceleration": "69.50",
+      "url": "https://www.gtabase.com/grand-theft-auto-v/vehicles/coquette-d1",
+      "image": "https://www.gtabase.com/images/jch-optimize/ng/images_gta-5_vehicles_sports-classic_coquette-d1.avif"
+    },
+    {
+      "name": "Bus",
+      "discount": "-30%",
+      "discountedPrice": "$350,000",
+      "manufacturer": "Unknown",
+      "acquisition": "Warstock Cache & Carry",
+      "basePrice": "$500,000",
+      "class": "Service",
+      "topSpeed": "53.66",
+      "acceleration": "30.00",
+      "url": "https://www.gtabase.com/grand-theft-auto-v/vehicles/brute-bus",
+      "image": "https://www.gtabase.com/images/gta-5/vehicles/service/main/bus.jpg"
+    },
+    {
+      "name": "Adder",
+      "discount": "-30%",
+      "discountedPrice": "$700,000",
+      "manufacturer": "Truffade",
+      "acquisition": "Legendary Motorsport",
+      "basePrice": "$1,000,000",
+      "class": "Super",
+      "topSpeed": "85.85",
+      "acceleration": "80.00",
+      "url": "https://www.gtabase.com/grand-theft-auto-v/vehicles/truffade-adder",
+      "image": "https://www.gtabase.com/images/gta-5/vehicles/super/main/adder.jpg"
+    },
+    {
+      "name": "Z-Type",
+      "discount": "-30%",
+      "discountedPrice": "$665,000",
+      "manufacturer": "Truffade",
+      "acquisition": "Legendary Motorsport",
+      "basePrice": "$950,000",
+      "class": "Sports Classics",
+      "topSpeed": "75.12",
+      "acceleration": "55.00",
+      "url": "https://www.gtabase.com/grand-theft-auto-v/vehicles/truffade-z-type",
+      "image": "https://www.gtabase.com/images/gta-5/vehicles/sports-classic/main/z-type.jpg"
+    },
+    {
+      "name": "Uranus LozSpeed",
+      "discount": "-30%",
+      "discountedPrice": "$798,000",
+      "manufacturer": "Vapid",
+      "acquisition": "Southern S.A. Super Autos",
+      "basePrice": "$1,140,000",
+      "class": "Sports Classics",
+      "topSpeed": "83.17",
+      "acceleration": "81.13",
+      "url": "https://www.gtabase.com/vehicles/grand-theft-auto-v/uranus-lozspeed",
+      "image": "https://www.gtabase.com/images/jch-optimize/ng/igallery_gta5-database_uranus-lozspeed-360.avif"
+    }
+  ],
+  "propertyDiscounts": [
+    {
+      "name": "Paleto Bay Bail Office",
+      "discount": "-60%",
+      "basePrice": "$1,650,000",
+      "discountedPrice": "$660,000",
+      "url": "https://www.gtabase.com/gta-online/properties/paleto-bay-bail-office",
+      "image": "https://www.gtabase.com/images/jch-optimize/ng/images_gta-5_properties_bail-office_paleto-bay-bail-office.avif"
+    },
+    {
+      "name": "Paleto Bay Clubhouse 1",
+      "discount": "-60%",
+      "basePrice": "$242,000",
+      "discountedPrice": "$96,800",
+      "url": "https://www.gtabase.com/grand-theft-auto-v/properties/gta-online/paleto-bay-clubhouse",
+      "image": "https://www.gtabase.com/images/gta-5/properties/biker-clubhouse/paleto-bay-clubhouse-2.jpg"
+    },
+    {
+      "name": "Paleto Bay Clubhouse 2",
+      "discount": "-60%",
+      "basePrice": "$250,000",
+      "discountedPrice": "$100,000",
+      "url": "https://www.gtabase.com/grand-theft-auto-v/properties/gta-online/paleto-bay-clubhouse-2",
+      "image": "https://www.gtabase.com/images/gta-5/properties/biker-clubhouse/paleto-bay-clubhouse.jpg"
+    },
+    {
+      "name": "Paleto Bay Facility",
+      "discount": "-60%",
+      "basePrice": "$1,250,000",
+      "discountedPrice": "$500,000",
+      "url": "https://www.gtabase.com/grand-theft-auto-v/properties/gta-online/paleto-bay-facility",
+      "image": "https://www.gtabase.com/images/gta-5/properties/facility/paleto-bay-facility.jpg"
+    },
+    {
+      "name": "Paleto Bay Salvage Yard",
+      "discount": "-60%",
+      "basePrice": "$1,620,000",
+      "discountedPrice": "$648,000",
+      "url": "https://www.gtabase.com/gta-online/properties/paleto-bay-salvage-yard",
+      "image": "https://www.gtabase.com/images/gta-5/properties/salvage-yard/paleto-bay-salvage-yard.jpg"
+    },
+    {
+      "name": "Cocaine Lockup Paleto Bay",
+      "discount": "-60%",
+      "basePrice": "$1,098,000",
+      "discountedPrice": "$439,200",
+      "url": "https://www.gtabase.com/grand-theft-auto-v/properties/gta-online/cocaine-lockup-paleto-bay",
+      "image": "https://www.gtabase.com/images/gta-5/properties/biker-business/cocaine-lockup-paleto-bay.jpg"
+    },
+    {
+      "name": "Methamphetamine Lab Paleto Bay",
+      "discount": "-60%",
+      "basePrice": "$1,024,800",
+      "discountedPrice": "$409,920",
+      "url": "https://www.gtabase.com/grand-theft-auto-v/properties/gta-online/methamphetamine-lab-paleto-bay",
+      "image": "https://www.gtabase.com/images/jch-optimize/ng/images_gta-5_properties_biker-business_methamphetamine-lab-paleto-bay.avif"
+    },
+    {
+      "name": "Document Forgery Office Paleto Bay",
+      "discount": "-60%",
+      "basePrice": "$732,000",
+      "discountedPrice": "$292,800",
+      "url": "https://www.gtabase.com/grand-theft-auto-v/properties/gta-online/document-forgery-office-paleto-bay",
+      "image": "https://www.gtabase.com/images/gta-5/properties/biker-business/document-forgery-office-paleto-bay.jpg"
+    },
+    {
+      "name": "Counterfeit Cash Factory Paleto Bay",
+      "discount": "-60%",
+      "basePrice": "$951,600",
+      "discountedPrice": "$380,640",
+      "url": "https://www.gtabase.com/grand-theft-auto-v/properties/gta-online/counterfeit-cash-factory-paleto-bay",
+      "image": "https://www.gtabase.com/images/gta-5/properties/biker-business/counterfeit-cash-factory-paleto-bay.jpg"
+    },
+    {
+      "name": "142 Paleto Boulevard",
+      "discount": "-60%",
+      "basePrice": "$26,500",
+      "discountedPrice": "$10,600",
+      "url": "https://www.gtabase.com/grand-theft-auto-v/properties/gta-online/142-paleto-boulevard",
+      "image": "https://www.gtabase.com/images/gta-5/properties/garage/142-paleto-boulevard.jpg"
+    },
+    {
+      "name": "0232 Paleto Boulevard",
+      "discount": "-60%",
+      "basePrice": "$121,000",
+      "discountedPrice": "$48,400",
+      "url": "https://www.gtabase.com/grand-theft-auto-v/properties/gta-online/0232-paleto-boulevard",
+      "image": "https://www.gtabase.com/images/jch-optimize/ng/images_gta-5_properties_apartment_0232-paleto-boulevard.avif"
+    },
+    {
+      "name": "Paleto Forest Bunker",
+      "discount": "-60%",
+      "basePrice": "$1,165,000",
+      "discountedPrice": "$466,000",
+      "url": "https://www.gtabase.com/grand-theft-auto-v/properties/gta-online/paleto-forest-bunker",
+      "image": "https://www.gtabase.com/images/gta-5/properties/bunker/paleto-forest-bunker.jpg"
+    },
+    {
+      "name": "Galaxy Super Yacht",
+      "discount": "-60%",
+      "basePrice": null,
+      "discountedPrice": null,
+      "url": "https://www.gtabase.com/grand-theft-auto-v/guides/property-types/galaxy-super-yacht",
+      "image": "https://www.gtabase.com/images/gta-5/properties/yacht/full/galaxy-super-yachts.jpg"
+    },
+    {
+      "name": "Apartments",
+      "discount": "-40%",
+      "basePrice": null,
+      "discountedPrice": null,
+      "url": "https://www.gtabase.com/grand-theft-auto-v/guides/property-types/apartments",
+      "image": "https://www.gtabase.com/igallery/501-600/GTAOnline_Apartment_HighEnd_03_Dining-509-512.jpg"
+    }
+  ]
 }
