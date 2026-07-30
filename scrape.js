@@ -17,9 +17,9 @@ function cleanImageUrl(urlPath) {
   if (!fullUrl) return null;
 
   return fullUrl
-    .replace(/_resized/g, '')      // Removes '_resized' from filename
-    .replace(/\/resized\//g, '/')  // Removes '/resized/' directory segment if present
-    .replace(/_+320x180/g, '');    // Removes '_320x180' or '__320x180' resolution tags
+    .replace(/_resized/g, '')
+    .replace(/\/resized\//g, '/')
+    .replace(/_+320x180/g, '');
 }
 
 // Helper to prevent getting IP banned by GTABase during the deep scrape
@@ -48,20 +48,24 @@ async function scrapeShowrooms() {
 
     const $ = cheerio.load(data);
 
-    // 1. Initialize the strict JSON structure
-    const showroomsData = {
+    // 1. Initialize the complete JSON structure including separate discounts
+    const weeklyData = {
       podiumVehicle: null,
       prizeRide: null,
       premiumDeluxeMotorsport: [],
       luxuryAutos: [],
       testRides: [],
-      premiumTestRide: null
+      premiumTestRide: null,
+      vehicleDiscounts: [],
+      propertyDiscounts: []
     };
 
     const vehiclesToScrape = [];
+    const seenUrls = new Set();
+
+    // --- PARSE SHOWROOMS & TEST RIDES ---
     const $showroomsSection = $('#showrooms-test-rides').closest('.field-entry');
 
-    // 2. Parse the main page and build the base objects
     $showroomsSection.find('li.gta-bonuses').each((_, itemEl) => {
       const $item = $(itemEl);
       const typeText = $item.find('.item-type').text().trim().toLowerCase();
@@ -87,36 +91,83 @@ async function scrapeShowrooms() {
         image: cleanImageUrl($item.find('.item-image img').attr('src'))
       };
 
-      if (vehicleObj.url) {
+      if (vehicleObj.url && !seenUrls.has(vehicleObj.url)) {
         vehiclesToScrape.push(vehicleObj);
+        seenUrls.add(vehicleObj.url);
       }
 
       if (typeText.includes('podium vehicle')) {
-        showroomsData.podiumVehicle = vehicleObj;
+        weeklyData.podiumVehicle = vehicleObj;
       } else if (typeText.includes('prize ride')) {
-        showroomsData.prizeRide = vehicleObj;
+        weeklyData.prizeRide = vehicleObj;
       } else if (typeText.includes('premium deluxe motorsport')) {
-        showroomsData.premiumDeluxeMotorsport.push(vehicleObj);
+        weeklyData.premiumDeluxeMotorsport.push(vehicleObj);
       } else if (typeText.includes('luxury autos')) {
-        showroomsData.luxuryAutos.push(vehicleObj);
+        weeklyData.luxuryAutos.push(vehicleObj);
       } else if (typeText.includes('premium test ride')) {
-        showroomsData.premiumTestRide = vehicleObj;
+        weeklyData.premiumTestRide = vehicleObj;
       } else if (typeText.includes('test ride')) {
-        showroomsData.testRides.push(vehicleObj);
+        weeklyData.testRides.push(vehicleObj);
       }
     });
 
-    // 3. FIX FOR BACKWARDS TAGGING
-    if (showroomsData.luxuryAutos.length > showroomsData.premiumDeluxeMotorsport.length) {
+    // Backwards tagging fix for showrooms
+    if (weeklyData.luxuryAutos.length > weeklyData.premiumDeluxeMotorsport.length) {
         console.log('⚠️ Detected backwards tags from GTABase. Swapping PDM and Luxury Autos arrays...');
-        const temp = showroomsData.premiumDeluxeMotorsport;
-        showroomsData.premiumDeluxeMotorsport = showroomsData.luxuryAutos;
-        showroomsData.luxuryAutos = temp;
+        const temp = weeklyData.premiumDeluxeMotorsport;
+        weeklyData.premiumDeluxeMotorsport = weeklyData.luxuryAutos;
+        weeklyData.luxuryAutos = temp;
     }
 
-    console.log(`Found ${vehiclesToScrape.length} vehicles. Fetching detailed stats...`);
+    // --- PARSE IN-GAME DISCOUNTS ---
+    $('li.gta-bonuses').each((_, itemEl) => {
+      const $item = $(itemEl);
+      const typeText = $item.find('.item-type').text().trim();
 
-    // 4. Deep Scrape: Visit each vehicle URL to get the stats
+      // Match percentage tags like "40% Off", "30% Off", etc.
+      if (typeText.match(/\d+%\s*off/i)) {
+        const $titleLink = $item.find('h3.contentheading a');
+        const name = $titleLink.text().trim();
+        const url = resolveUrl($titleLink.attr('href'));
+        const image = cleanImageUrl($item.find('.item-image img').attr('src'));
+
+        if (!url || seenUrls.has(url)) return;
+
+        // Check specifically for Vehicles
+        if (url.includes('/vehicles/')) {
+          const vehicleDiscountObj = {
+            name,
+            discount: typeText,
+            manufacturer: null,
+            acquisition: null,
+            price: null,
+            class: null,
+            topSpeed: null,
+            acceleration: null,
+            url,
+            image
+          };
+
+          weeklyData.vehicleDiscounts.push(vehicleDiscountObj);
+          vehiclesToScrape.push(vehicleDiscountObj);
+          seenUrls.add(url);
+
+        // Check explicitly for Properties & Property Types
+        } else if (url.includes('/properties/') || url.includes('/property-types/')) {
+          weeklyData.propertyDiscounts.push({
+            name,
+            discount: typeText,
+            url,
+            image
+          });
+          seenUrls.add(url);
+        }
+      }
+    });
+
+    console.log(`Found ${vehiclesToScrape.length} total vehicles (Showrooms + Discounts). Fetching detailed stats...`);
+
+    // --- DEEP SCRAPE FOR VEHICLES ---
     for (let i = 0; i < vehiclesToScrape.length; i++) {
         const vehicle = vehiclesToScrape[i];
         console.log(`[${i + 1}/${vehiclesToScrape.length}] Scraping stats for: ${vehicle.name}`);
@@ -143,8 +194,8 @@ async function scrapeShowrooms() {
         }
     }
 
-    // 5. Save the final robust data to JSON
-    fs.writeFileSync('showrooms.json', JSON.stringify(showroomsData, null, 2), 'utf-8');
+    // Save final output
+    fs.writeFileSync('showrooms.json', JSON.stringify(weeklyData, null, 2), 'utf-8');
     console.log('\n✅ Successfully compiled all data and saved to showrooms.json');
 
   } catch (error) {
