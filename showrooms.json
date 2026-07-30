@@ -147,5 +147,7 @@
     "acceleration": "88.62",
     "url": "https://www.gtabase.com/grand-theft-auto-v/vehicles/entity-mt",
     "image": "https://www.gtabase.com/images/jch-optimize/ng/images_gta-5_vehicles_super_main_entity-mt.webp"
-  }
+  },
+  "vehicleDiscounts": [],
+  "propertyDiscounts": []
 }
