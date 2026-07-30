@@ -1,32 +1,56 @@
 {
   "podiumVehicle": {
     "name": "Ratel",
+    "manufacturer": "VapidSouthern S.A. Super Autos",
+    "class": "Off-Road",
+    "topSpeed": "113.00 mph (181.86 km/h)",
+    "acceleration": "85.50",
     "url": "https://www.gtabase.com/grand-theft-auto-v/vehicles/ratel",
     "image": "https://www.gtabase.com/images/jch-optimize/ng/images_gta-5_vehicles_off-road_main_resized_ratel__320x180.webp"
   },
   "prizeRide": {
     "name": "Postlude",
+    "manufacturer": "DinkaSouthern S.A. Super Autos",
+    "class": "Coupes, Tuners",
+    "topSpeed": "103.00 mph (165.76 km/h)",
+    "acceleration": "73.75",
     "url": "https://www.gtabase.com/grand-theft-auto-v/vehicles/postlude",
     "image": "https://www.gtabase.com/images/jch-optimize/ng/images_gta-5_vehicles_coupes_main_resized_postlude__320x180.webp"
   },
   "premiumDeluxeMotorsport": [
     {
       "name": "Vorschlaghammer",
+      "manufacturer": "BenefactorSouthern S.A. Super Autos",
+      "class": "Sedans",
+      "topSpeed": "122.75 mph (197.55 km/h)",
+      "acceleration": "66.25",
       "url": "https://www.gtabase.com/grand-theft-auto-v/vehicles/vorschlaghammer",
       "image": "https://www.gtabase.com/images/jch-optimize/ng/igallery_gta5-database_resized_vorschlaghammer-360__320x180.avif"
     },
     {
       "name": "Tulip M-100",
+      "manufacturer": "DeclasseSouthern S.A. Super Autos",
+      "class": "Muscle",
+      "topSpeed": "116.75 mph (187.89 km/h)",
+      "acceleration": "78.82",
       "url": "https://www.gtabase.com/grand-theft-auto-v/vehicles/tulip-m-100",
       "image": "https://www.gtabase.com/images/jch-optimize/ng/images_gta-5_vehicles_muscle_main_resized_tulip-m-100__320x180.webp"
     },
     {
       "name": "811",
+      "manufacturer": "PfisterLegendary Motorsport",
+      "class": "Super",
+      "topSpeed": "130.75 mph (210.42 km/h)",
+      "acceleration": "89.00",
       "url": "https://www.gtabase.com/grand-theft-auto-v/vehicles/pfister-811",
       "image": "https://www.gtabase.com/images/gta-5/vehicles/super/main/resized/811_320x180.jpg"
     },
     {
       "name": "Retinue Mk II",
+      "manufacturer": "VapidSouthern S.A. Super Autos",
+      "class": "Sports Classics",
+      "topSpeed": "120.25 mph (193.52 km/h)",
+      "acceleration": "69.38",
       "url": "https://www.gtabase.com/grand-theft-auto-v/vehicles/retinue-mk-ii",
       "image": "https://www.gtabase.com/images/gta-5/vehicles/sports-classic/main/resized/retinue-mk-ii_320x180.jpg"
     }
@@ -34,11 +58,19 @@
   "luxuryAutos": [
     {
       "name": "Läufer",
+      "manufacturer": "BenefactorSouthern S.A. Super Autos",
+      "class": "Vans",
+      "topSpeed": "110.00 mph (177.03 km/h)",
+      "acceleration": "48.50",
       "url": "https://www.gtabase.com/vehicles/grand-theft-auto-v/laufer",
       "image": "https://www.gtabase.com/igallery/gta5-database/resized/laufer-360_320x180.jpg"
     },
     {
       "name": "Veleno GT",
+      "manufacturer": "GrottiLegendary Motorsport",
+      "class": "Super",
+      "topSpeed": "138.75 mph (223.30 km/h)",
+      "acceleration": "97.00",
       "url": "https://www.gtabase.com/vehicles/grand-theft-auto-v/veleno-gt",
       "image": "https://www.gtabase.com/igallery/gta5-database/resized/veleno-gt-360_320x180.jpg"
     }
@@ -46,22 +78,38 @@
   "testRides": [
     {
       "name": "JB 700W",
+      "manufacturer": "DewbaucheeWarstock Cache & Carry",
+      "class": "Sports Classics",
+      "topSpeed": "120.00 mph (193.12 km/h)",
+      "acceleration": "65.00",
       "url": "https://www.gtabase.com/grand-theft-auto-v/vehicles/jb-700w",
       "image": "https://www.gtabase.com/images/gta-5/vehicles/sports-classic/main/resized/jb-700w_320x180.jpg"
     },
     {
       "name": "Tempesta",
+      "manufacturer": "PegassiLegendary Motorsport",
+      "class": "Super",
+      "topSpeed": "121.50 mph (195.53 km/h)",
+      "acceleration": "90.00",
       "url": "https://www.gtabase.com/grand-theft-auto-v/vehicles/pegassi-tempesta",
       "image": "https://www.gtabase.com/images/gta-5/vehicles/super/main/resized/tempesta_320x180.jpg"
     },
     {
       "name": "Torero",
+      "manufacturer": "PegassiLegendary Motorsport",
+      "class": "Sports Classics",
+      "topSpeed": "116.50 mph (187.49 km/h)",
+      "acceleration": "75.00",
       "url": "https://www.gtabase.com/grand-theft-auto-v/vehicles/pegassi-torero",
       "image": "https://www.gtabase.com/images/gta-5/vehicles/sports-classic/main/resized/torero_320x180.jpg"
     }
   ],
   "premiumTestRide": {
     "name": "Brioso R/A",
+    "manufacturer": "GrottiSouthern S.A. Super Autos",
+    "class": "Compacts",
+    "topSpeed": "103.75 mph (166.97 km/h)",
+    "acceleration": "72.50",
     "url": "https://www.gtabase.com/grand-theft-auto-v/vehicles/grotti-brioso-r-a",
     "image": "https://www.gtabase.com/images/gta-5/vehicles/compacts/main/resized/brioso_320x180.jpg"
   }
