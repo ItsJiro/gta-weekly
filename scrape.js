@@ -19,7 +19,7 @@ function cleanImageUrl(urlPath) {
   return fullUrl
     .replace(/_resized/g, '')
     .replace(/\/resized\//g, '/')
-    .replace(/_+320x180/g, '');
+    .replace(/_+\d+x\d+/g, ''); // Dynamically catches __320x180, __256x128, _320x180, etc.
 }
 
 // Helper to prevent getting IP banned by GTABase
@@ -113,24 +113,19 @@ async function scrapeShowrooms() {
     }
 
     // --- PARSE IN-GAME DISCOUNTS ---
-    // Specifically target the class you identified
     $('li.gta-bonuses.item-scale').each((_, itemEl) => {
       const $item = $(itemEl);
 
       // EXCLUDE GTA+ Benefits by checking the main header of its section
       const sectionLabel = $item.closest('.field-entry').find('.field-label, h2, h3').first().text().toLowerCase();
       if (sectionLabel.includes('gta+')) {
-          return; // Skip this iteration entirely
+          return;
       }
 
       const $titleLink = $item.find('h3.contentheading a, .contentheading a').first();
       if ($titleLink.length === 0) return;
 
       const $titleClone = $titleLink.clone();
-
-      // Extract discount text from the badge (or fallback to item-type)
-      let discountText = $titleClone.find('.badge').text().trim() || $item.find('.item-type').text().trim();
-
       $titleClone.find('.badge').remove();
       const name = $titleClone.text().trim();
       const url = resolveUrl($titleLink.attr('href'));
@@ -138,13 +133,24 @@ async function scrapeShowrooms() {
 
       if (!url) return;
 
+      // Extract specific pricing properties based on your DOM targets
+      const discountPercentage = $item.find('div.discounted-price span.badge.new').text().trim();
+      const regularPrice = $item.find('div.article-info s').text().trim();
+
+      // Clone the discounted-price div, delete the badge child, and read the remaining text
+      const $discountDivClone = $item.find('div.discounted-price').clone();
+      $discountDivClone.find('span.badge').remove();
+      const discountedPrice = $discountDivClone.text().trim();
+
       if (url.includes('/vehicles/')) {
         const vehicleDiscountObj = {
           name,
-          discount: discountText || "Discounted",
+          discount: discountPercentage || null,
+          regularPrice: regularPrice || null,
+          discountedPrice: discountedPrice || null,
           manufacturer: null,
           acquisition: null,
-          price: null,
+          basePrice: null, // From the deep-scrape (renamed to basePrice to avoid confusion)
           class: null,
           topSpeed: null,
           acceleration: null,
@@ -153,12 +159,14 @@ async function scrapeShowrooms() {
         };
 
         weeklyData.vehicleDiscounts.push(vehicleDiscountObj);
-        allScrapedVehicles.push(vehicleDiscountObj); // Queue for deep scraping
+        allScrapedVehicles.push(vehicleDiscountObj);
 
       } else if (url.includes('/properties/') || url.includes('/property-types/')) {
         weeklyData.propertyDiscounts.push({
           name,
-          discount: discountText || "Discounted",
+          discount: discountPercentage || null,
+          regularPrice: regularPrice || null,
+          discountedPrice: discountedPrice || null,
           url,
           image
         });
@@ -166,7 +174,6 @@ async function scrapeShowrooms() {
     });
 
     // --- DEEP SCRAPE FOR VEHICLES ---
-    // Deduplicate URLs so we don't scrape the same vehicle twice (e.g. if it's in a showroom AND on discount)
     const uniqueUrls = [...new Set(allScrapedVehicles.map(v => v.url).filter(Boolean))];
 
     console.log(`Found ${uniqueUrls.length} unique vehicles to scrape stats for...`);
@@ -174,7 +181,6 @@ async function scrapeShowrooms() {
     for (let i = 0; i < uniqueUrls.length; i++) {
         const url = uniqueUrls[i];
 
-        // Find all JSON objects that share this URL so we can update them simultaneously
         const instancesToUpdate = allScrapedVehicles.filter(v => v.url === url);
         console.log(`[${i + 1}/${uniqueUrls.length}] Scraping stats for: ${instancesToUpdate[0].name}`);
 
@@ -191,11 +197,15 @@ async function scrapeShowrooms() {
             const topSpeed = extractStat($v, 'li.field-entry.speed.speed', 'Speed');
             const acceleration = extractStat($v, 'li.field-entry.acceleration.acceleration', 'Acceleration');
 
-            // Apply stats to all matching objects in our data arrays
             instancesToUpdate.forEach(vehicle => {
                 vehicle.manufacturer = manufacturer;
                 vehicle.acquisition = acquisition;
-                vehicle.price = price;
+                // If it's a discount object, we store deep-scrape price as 'basePrice'
+                if (vehicle.hasOwnProperty('basePrice')) {
+                    vehicle.basePrice = price;
+                } else {
+                    vehicle.price = price;
+                }
                 vehicle.class = vClass;
                 vehicle.topSpeed = topSpeed;
                 vehicle.acceleration = acceleration;
@@ -208,7 +218,6 @@ async function scrapeShowrooms() {
         }
     }
 
-    // Save final output
     fs.writeFileSync('showrooms.json', JSON.stringify(weeklyData, null, 2), 'utf-8');
     console.log('\n✅ Successfully compiled all data and saved to showrooms.json');
 
