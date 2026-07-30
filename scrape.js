@@ -22,17 +22,15 @@ function cleanImageUrl(urlPath) {
     .replace(/_+320x180/g, '');
 }
 
-// Helper to prevent getting IP banned by GTABase during the deep scrape
+// Helper to prevent getting IP banned by GTABase
 const delay = ms => new Promise(res => setTimeout(res, ms));
 
 // Helper to safely extract text from GTABase's specific list structures
 function extractStat($v, selector, labelToReplace, valueSelector = 'div.field-value') {
   let text = $v(`${selector} ${valueSelector}`).text().trim();
-
   if (!text) {
       text = $v(selector).text().replace(labelToReplace, '').trim();
   }
-
   return text.replace(/\s+/g, ' ') || "Unknown";
 }
 
@@ -48,7 +46,7 @@ async function scrapeShowrooms() {
 
     const $ = cheerio.load(data);
 
-    // 1. Initialize the complete JSON structure including separate discounts
+    // 1. Initialize the complete JSON structure
     const weeklyData = {
       podiumVehicle: null,
       prizeRide: null,
@@ -60,8 +58,8 @@ async function scrapeShowrooms() {
       propertyDiscounts: []
     };
 
-    const vehiclesToScrape = [];
-    const seenUrls = new Set();
+    // We will store every vehicle object reference here to update them later
+    const allScrapedVehicles = [];
 
     // --- PARSE SHOWROOMS & TEST RIDES ---
     const $showroomsSection = $('#showrooms-test-rides').closest('.field-entry');
@@ -74,7 +72,6 @@ async function scrapeShowrooms() {
       const $titleClone = $titleLink.clone();
       $titleClone.find('.badge').remove();
       let name = $titleClone.text().trim();
-
       if (name.toUpperCase().startsWith('HSW ')) {
         name = name.substring(4).trim();
       }
@@ -91,10 +88,7 @@ async function scrapeShowrooms() {
         image: cleanImageUrl($item.find('.item-image img').attr('src'))
       };
 
-      if (vehicleObj.url && !seenUrls.has(vehicleObj.url)) {
-        vehiclesToScrape.push(vehicleObj);
-        seenUrls.add(vehicleObj.url);
-      }
+      if (vehicleObj.url) allScrapedVehicles.push(vehicleObj);
 
       if (typeText.includes('podium vehicle')) {
         weeklyData.podiumVehicle = vehicleObj;
@@ -111,86 +105,106 @@ async function scrapeShowrooms() {
       }
     });
 
-    // Backwards tagging fix for showrooms
+    // Backwards tagging fix
     if (weeklyData.luxuryAutos.length > weeklyData.premiumDeluxeMotorsport.length) {
-        console.log('⚠️ Detected backwards tags from GTABase. Swapping PDM and Luxury Autos arrays...');
         const temp = weeklyData.premiumDeluxeMotorsport;
         weeklyData.premiumDeluxeMotorsport = weeklyData.luxuryAutos;
         weeklyData.luxuryAutos = temp;
     }
 
     // --- PARSE IN-GAME DISCOUNTS ---
-    $('li.gta-bonuses').each((_, itemEl) => {
+    // Specifically target the class you identified
+    $('li.gta-bonuses.item-scale').each((_, itemEl) => {
       const $item = $(itemEl);
-      const typeText = $item.find('.item-type').text().trim();
 
-      // Match percentage tags like "40% Off", "30% Off", etc.
-      if (typeText.match(/\d+%\s*off/i)) {
-        const $titleLink = $item.find('h3.contentheading a');
-        const name = $titleLink.text().trim();
-        const url = resolveUrl($titleLink.attr('href'));
-        const image = cleanImageUrl($item.find('.item-image img').attr('src'));
+      // EXCLUDE GTA+ Benefits by checking the main header of its section
+      const sectionLabel = $item.closest('.field-entry').find('.field-label, h2, h3').first().text().toLowerCase();
+      if (sectionLabel.includes('gta+')) {
+          return; // Skip this iteration entirely
+      }
 
-        if (!url || seenUrls.has(url)) return;
+      const $titleLink = $item.find('h3.contentheading a, .contentheading a').first();
+      if ($titleLink.length === 0) return;
 
-        // Check specifically for Vehicles
-        if (url.includes('/vehicles/')) {
-          const vehicleDiscountObj = {
-            name,
-            discount: typeText,
-            manufacturer: null,
-            acquisition: null,
-            price: null,
-            class: null,
-            topSpeed: null,
-            acceleration: null,
-            url,
-            image
-          };
+      const $titleClone = $titleLink.clone();
 
-          weeklyData.vehicleDiscounts.push(vehicleDiscountObj);
-          vehiclesToScrape.push(vehicleDiscountObj);
-          seenUrls.add(url);
+      // Extract discount text from the badge (or fallback to item-type)
+      let discountText = $titleClone.find('.badge').text().trim() || $item.find('.item-type').text().trim();
 
-        // Check explicitly for Properties & Property Types
-        } else if (url.includes('/properties/') || url.includes('/property-types/')) {
-          weeklyData.propertyDiscounts.push({
-            name,
-            discount: typeText,
-            url,
-            image
-          });
-          seenUrls.add(url);
-        }
+      $titleClone.find('.badge').remove();
+      const name = $titleClone.text().trim();
+      const url = resolveUrl($titleLink.attr('href'));
+      const image = cleanImageUrl($item.find('.item-image img').attr('src'));
+
+      if (!url) return;
+
+      if (url.includes('/vehicles/')) {
+        const vehicleDiscountObj = {
+          name,
+          discount: discountText || "Discounted",
+          manufacturer: null,
+          acquisition: null,
+          price: null,
+          class: null,
+          topSpeed: null,
+          acceleration: null,
+          url,
+          image
+        };
+
+        weeklyData.vehicleDiscounts.push(vehicleDiscountObj);
+        allScrapedVehicles.push(vehicleDiscountObj); // Queue for deep scraping
+
+      } else if (url.includes('/properties/') || url.includes('/property-types/')) {
+        weeklyData.propertyDiscounts.push({
+          name,
+          discount: discountText || "Discounted",
+          url,
+          image
+        });
       }
     });
 
-    console.log(`Found ${vehiclesToScrape.length} total vehicles (Showrooms + Discounts). Fetching detailed stats...`);
-
     // --- DEEP SCRAPE FOR VEHICLES ---
-    for (let i = 0; i < vehiclesToScrape.length; i++) {
-        const vehicle = vehiclesToScrape[i];
-        console.log(`[${i + 1}/${vehiclesToScrape.length}] Scraping stats for: ${vehicle.name}`);
+    // Deduplicate URLs so we don't scrape the same vehicle twice (e.g. if it's in a showroom AND on discount)
+    const uniqueUrls = [...new Set(allScrapedVehicles.map(v => v.url).filter(Boolean))];
+
+    console.log(`Found ${uniqueUrls.length} unique vehicles to scrape stats for...`);
+
+    for (let i = 0; i < uniqueUrls.length; i++) {
+        const url = uniqueUrls[i];
+
+        // Find all JSON objects that share this URL so we can update them simultaneously
+        const instancesToUpdate = allScrapedVehicles.filter(v => v.url === url);
+        console.log(`[${i + 1}/${uniqueUrls.length}] Scraping stats for: ${instancesToUpdate[0].name}`);
 
         try {
-            const { data: vehicleData } = await axios.get(vehicle.url, {
-                headers: {
-                  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
-                }
+            const { data: vehicleData } = await axios.get(url, {
+                headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' }
             });
             const $v = cheerio.load(vehicleData);
 
-            vehicle.manufacturer = extractStat($v, 'li.field-entry.manufacturer:not(.purchase)', 'Manufacturer');
-            vehicle.acquisition = extractStat($v, 'li.field-entry.purchase.manufacturer', 'Acquisition');
-            vehicle.price = extractStat($v, 'li.field-entry.price', 'Price', 'span.field-value');
-            vehicle.class = extractStat($v, 'li.field-entry.vehicle-class', 'Vehicle Class');
-            vehicle.topSpeed = extractStat($v, 'li.field-entry.speed.speed', 'Speed');
-            vehicle.acceleration = extractStat($v, 'li.field-entry.acceleration.acceleration', 'Acceleration');
+            const manufacturer = extractStat($v, 'li.field-entry.manufacturer:not(.purchase)', 'Manufacturer');
+            const acquisition = extractStat($v, 'li.field-entry.purchase.manufacturer', 'Acquisition');
+            const price = extractStat($v, 'li.field-entry.price', 'Price', 'span.field-value');
+            const vClass = extractStat($v, 'li.field-entry.vehicle-class', 'Vehicle Class');
+            const topSpeed = extractStat($v, 'li.field-entry.speed.speed', 'Speed');
+            const acceleration = extractStat($v, 'li.field-entry.acceleration.acceleration', 'Acceleration');
+
+            // Apply stats to all matching objects in our data arrays
+            instancesToUpdate.forEach(vehicle => {
+                vehicle.manufacturer = manufacturer;
+                vehicle.acquisition = acquisition;
+                vehicle.price = price;
+                vehicle.class = vClass;
+                vehicle.topSpeed = topSpeed;
+                vehicle.acceleration = acceleration;
+            });
 
             await delay(1500);
 
         } catch (err) {
-            console.error(`❌ Failed to scrape stats for ${vehicle.name}:`, err.message);
+            console.error(`❌ Failed to scrape stats for ${url}:`, err.message);
         }
     }
 
