@@ -46,7 +46,18 @@ async function scrapeShowrooms() {
 
     const $ = cheerio.load(data);
 
-    // 1. Initialize the complete JSON structure
+    // --- 1. PURGE GTA+ SECTION FROM DOM BEFORE PARSING ---
+    // Target headers/spans with GTA+ monthly benefits IDs or links and wipe everything beneath them
+    $('[id*="gta-monthly-benefits"], [id*="gta+"], a[href*="gta+-monthly-benefits"]').each((_, el) => {
+      const $header = $(el).closest('h2, h3, .section-title, .field-entry');
+      if ($header.length) {
+        // Remove all sibling elements under this heading until the next heading
+        $header.nextUntil('h2, h3, .section-title').remove();
+        $header.remove();
+      }
+    });
+
+    // Initialize the complete JSON structure
     const weeklyData = {
       podiumVehicle: null,
       prizeRide: null,
@@ -115,22 +126,9 @@ async function scrapeShowrooms() {
     $('li.gta-bonuses.item-scale').each((_, itemEl) => {
       const $item = $(itemEl);
 
-      // EXCLUDE SHOWROOM ITEMS from being treated as discounts
+      // Ignore showroom items in case any are left in this selector
       if ($item.closest('#showrooms-test-rides').length > 0) {
         return;
-      }
-
-      // EXCLUDE GTA+ BENEFITS (by checking section container HTML or headers for gta+ benefits URL)
-      const $section = $item.closest('.field-entry, .section');
-      const sectionHtml = $section.html() || '';
-      const sectionText = $section.find('.field-label, h2, h3, h4').text().toLowerCase();
-
-      if (
-        sectionHtml.includes('/gta+-monthly-benefits') ||
-        sectionText.includes('gta+') ||
-        $item.find('a[href*="gta+-monthly-benefits"]').length > 0
-      ) {
-        return; // Skip GTA+ items
       }
 
       const $titleLink = $item.find('h3.contentheading a, .contentheading a').first();
@@ -144,14 +142,22 @@ async function scrapeShowrooms() {
 
       if (!url) return;
 
-      // Extract discount & price details
+      // Extract discount percentage
       const discountPercentage = $item.find('div.discounted-price span.badge.new').text().trim() || null;
 
+      // Extract discounted price
       const $discountDivClone = $item.find('div.discounted-price').clone();
       $discountDivClone.find('span.badge').remove();
       const discountedPrice = $discountDivClone.text().trim() || null;
 
-      // STRICT CHECK: Must actually be a discount item (must have percentage or discounted price)
+      // Extract base price from div.article-info (checks <s> tag first)
+      let basePrice = $item.find('div.article-info s').text().trim();
+      if (!basePrice) {
+        basePrice = $item.find('div.article-info').text().trim();
+      }
+      basePrice = basePrice || null;
+
+      // Must be an actual discount item
       if (!discountPercentage && !discountedPrice) {
         return;
       }
@@ -163,7 +169,7 @@ async function scrapeShowrooms() {
           discountedPrice: discountedPrice,
           manufacturer: null,
           acquisition: null,
-          basePrice: null, // Populated via deep scrape
+          basePrice: null, // Populated via deep scrape for accuracy
           class: null,
           topSpeed: null,
           acceleration: null,
@@ -178,6 +184,7 @@ async function scrapeShowrooms() {
         weeklyData.propertyDiscounts.push({
           name,
           discount: discountPercentage,
+          basePrice: basePrice,
           discountedPrice: discountedPrice,
           url,
           image
@@ -213,7 +220,6 @@ async function scrapeShowrooms() {
                 vehicle.manufacturer = manufacturer;
                 vehicle.acquisition = acquisition;
 
-                // Assign to basePrice if it's a discount object, or price if it's a showroom object
                 if (vehicle.hasOwnProperty('basePrice')) {
                     vehicle.basePrice = price;
                 } else {
