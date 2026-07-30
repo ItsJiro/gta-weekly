@@ -44,20 +44,31 @@ async function scrapeShowrooms() {
       }
     });
 
-    // --- 1. TRUNCATE GTA+ SECTION FROM RAW HTML SOURCE ---
-    // Locates where GTA+ starts in the HTML string and cuts off everything after it
-    let htmlToParse = data;
-    const gtaPlusPos = htmlToParse.search(/id=["']gta-monthly-benefits|GTA\+\s*MONTHLY\s*BENEFITS/i);
+    const $ = cheerio.load(data);
 
-    if (gtaPlusPos !== -1) {
-      const cutIndex = htmlToParse.lastIndexOf('<', gtaPlusPos);
-      if (cutIndex !== -1) {
-        console.log('✂️ Truncated GTA+ section from raw HTML source.');
-        htmlToParse = htmlToParse.substring(0, cutIndex);
+    // --- 1. DOM PURGE FOR GTA+ SECTION ---
+    // Target the specific H2 heading for GTA+ Benefits in the page body
+    $('h2.section-title, h2, h3').each((_, el) => {
+      const $h2 = $(el);
+      const text = $h2.text().toUpperCase();
+      const hasGtaPlusSpan = $h2.find('span[id*="gta-monthly-benefits"], span[id*="gta-plus"]').length > 0;
+
+      if (text.includes('GTA+ MONTHLY BENEFITS') || hasGtaPlusSpan) {
+        console.log('✂️ Found GTA+ section in DOM. Purging section and all trailing elements...');
+
+        // Remove all trailing elements after this header within the container
+        $h2.nextAll().remove();
+
+        // If inside a parent field-entry container, remove trailing parent entries as well
+        const $parentEntry = $h2.closest('.field-entry');
+        if ($parentEntry.length) {
+          $parentEntry.nextAll().remove();
+          $parentEntry.remove();
+        } else {
+          $h2.remove();
+        }
       }
-    }
-
-    const $ = cheerio.load(htmlToParse);
+    });
 
     // Initialize output object
     const weeklyData = {
