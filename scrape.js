@@ -19,7 +19,7 @@ function cleanImageUrl(urlPath) {
   return fullUrl
     .replace(/_resized/g, '')
     .replace(/\/resized\//g, '/')
-    .replace(/_+\d+x\d+/g, ''); // Dynamically strips any resolution tags (__320x180, __256x128, etc.)
+    .replace(/_+\d+x\d+/g, ''); // Dynamically strips resolution tags (__320x180, __256x128, etc.)
 }
 
 // Helper to prevent getting IP banned by GTABase
@@ -44,20 +44,22 @@ async function scrapeShowrooms() {
       }
     });
 
-    const $ = cheerio.load(data);
+    // --- 1. TRUNCATE GTA+ SECTION FROM RAW HTML SOURCE ---
+    // Locates where GTA+ starts in the HTML string and cuts off everything after it
+    let htmlToParse = data;
+    const gtaPlusPos = htmlToParse.search(/id=["']gta-monthly-benefits|GTA\+\s*MONTHLY\s*BENEFITS/i);
 
-    // --- 1. PURGE GTA+ SECTION FROM DOM BEFORE PARSING ---
-    // Target headers/spans with GTA+ monthly benefits IDs or links and wipe everything beneath them
-    $('[id*="gta-monthly-benefits"], [id*="gta+"], a[href*="gta+-monthly-benefits"]').each((_, el) => {
-      const $header = $(el).closest('h2, h3, .section-title, .field-entry');
-      if ($header.length) {
-        // Remove all sibling elements under this heading until the next heading
-        $header.nextUntil('h2, h3, .section-title').remove();
-        $header.remove();
+    if (gtaPlusPos !== -1) {
+      const cutIndex = htmlToParse.lastIndexOf('<', gtaPlusPos);
+      if (cutIndex !== -1) {
+        console.log('✂️ Truncated GTA+ section from raw HTML source.');
+        htmlToParse = htmlToParse.substring(0, cutIndex);
       }
-    });
+    }
 
-    // Initialize the complete JSON structure
+    const $ = cheerio.load(htmlToParse);
+
+    // Initialize output object
     const weeklyData = {
       podiumVehicle: null,
       prizeRide: null,
@@ -115,7 +117,7 @@ async function scrapeShowrooms() {
       }
     });
 
-    // Backwards tagging fix for showrooms
+    // Backwards tagging fix
     if (weeklyData.luxuryAutos.length > weeklyData.premiumDeluxeMotorsport.length) {
         const temp = weeklyData.premiumDeluxeMotorsport;
         weeklyData.premiumDeluxeMotorsport = weeklyData.luxuryAutos;
@@ -150,12 +152,12 @@ async function scrapeShowrooms() {
       $discountDivClone.find('span.badge').remove();
       const discountedPrice = $discountDivClone.text().trim() || null;
 
-      // Extract base price from div.article-info (checks <s> tag first)
+      // Extract base price from div.article-info (checks <s> tag first, falls back to full div text)
       let basePrice = $item.find('div.article-info s').text().trim();
       if (!basePrice) {
         basePrice = $item.find('div.article-info').text().trim();
       }
-      basePrice = basePrice || null;
+      basePrice = basePrice ? basePrice.replace(/\s+/g, ' ') : null;
 
       // Must be an actual discount item
       if (!discountPercentage && !discountedPrice) {
@@ -169,7 +171,7 @@ async function scrapeShowrooms() {
           discountedPrice: discountedPrice,
           manufacturer: null,
           acquisition: null,
-          basePrice: null, // Populated via deep scrape for accuracy
+          basePrice: null, // Populated via deep scrape for cars
           class: null,
           topSpeed: null,
           acceleration: null,
