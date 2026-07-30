@@ -11,6 +11,17 @@ function resolveUrl(urlPath) {
   return urlPath.startsWith('http') ? urlPath : `${BASE_URL}${urlPath}`;
 }
 
+// Helper to clean image URLs and retrieve full-resolution assets
+function cleanImageUrl(urlPath) {
+  const fullUrl = resolveUrl(urlPath);
+  if (!fullUrl) return null;
+
+  return fullUrl
+    .replace(/_resized/g, '')      // Removes '_resized' from filename
+    .replace(/\/resized\//g, '/')  // Removes '/resized/' directory segment if present
+    .replace(/_+320x180/g, '');    // Removes '_320x180' or '__320x180' resolution tags
+}
+
 // Helper to prevent getting IP banned by GTABase during the deep scrape
 const delay = ms => new Promise(res => setTimeout(res, ms));
 
@@ -68,12 +79,12 @@ async function scrapeShowrooms() {
         name,
         manufacturer: null,
         acquisition: null,
-        price: null, // New field for the vehicle price
+        price: null,
         class: null,
         topSpeed: null,
         acceleration: null,
         url: resolveUrl($titleLink.attr('href')),
-        image: resolveUrl($item.find('.item-image img').attr('src'))
+        image: cleanImageUrl($item.find('.item-image img').attr('src'))
       };
 
       if (vehicleObj.url) {
@@ -120,10 +131,7 @@ async function scrapeShowrooms() {
 
             vehicle.manufacturer = extractStat($v, 'li.field-entry.manufacturer:not(.purchase)', 'Manufacturer');
             vehicle.acquisition = extractStat($v, 'li.field-entry.purchase.manufacturer', 'Acquisition');
-
-            // Extract Price using `span.field-value` instead of `div.field-value`
             vehicle.price = extractStat($v, 'li.field-entry.price', 'Price', 'span.field-value');
-
             vehicle.class = extractStat($v, 'li.field-entry.vehicle-class', 'Vehicle Class');
             vehicle.topSpeed = extractStat($v, 'li.field-entry.speed.speed', 'Speed');
             vehicle.acceleration = extractStat($v, 'li.field-entry.acceleration.acceleration', 'Acceleration');
