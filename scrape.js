@@ -16,11 +16,14 @@ const delay = ms => new Promise(res => setTimeout(res, ms));
 
 // Helper to safely extract text from GTABase's specific list structures
 function extractStat($v, selector, labelToReplace) {
-  let text = $v(`${selector} .field-value`).text().trim();
-  // Fallback in case they don't use .field-value
+  // Looks for the specific div.field-value inside the provided li selector
+  let text = $v(`${selector} div.field-value`).text().trim();
+
+  // Fallback in case the structure changes slightly
   if (!text) {
       text = $v(selector).text().replace(labelToReplace, '').trim();
   }
+
   // Clean up excessive spaces or line breaks
   return text.replace(/\s+/g, ' ') || "Unknown";
 }
@@ -123,15 +126,14 @@ async function scrapeShowrooms() {
             // Extract Manufacturer
             vehicle.manufacturer = extractStat($v, 'li.field-entry.manufacturer', 'Manufacturer');
 
-            // Extract Vehicle Class (Using your exact li.field-entry.vehicle-class selector)
+            // Extract Vehicle Class
             vehicle.class = extractStat($v, 'li.field-entry.vehicle-class', 'Vehicle Class');
 
-            // Extract Top Speed (Using your exact li.field-entry.top-speed-broughy selector)
-            // GTABase outputs this as "130.00 mph (209.21 km/h)" by default, which gives you both!
-            vehicle.topSpeed = extractStat($v, 'li.field-entry.top-speed-broughy', 'Top Speed (Broughy)');
+            // Extract Speed (Using the requested speed.speed selector)
+            vehicle.topSpeed = extractStat($v, 'li.field-entry.speed.speed', 'Speed');
 
-            // Extract Acceleration
-            vehicle.acceleration = extractStat($v, 'li.field-entry.acceleration', 'Acceleration');
+            // Extract Acceleration (Using the requested acceleration.acceleration selector)
+            vehicle.acceleration = extractStat($v, 'li.field-entry.acceleration.acceleration', 'Acceleration');
 
             // Wait 1.5 seconds so GitHub Actions doesn't trigger a firewall block
             await delay(1500);
