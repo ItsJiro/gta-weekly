@@ -8,7 +8,7 @@
     "topSpeed": "79.33",
     "acceleration": "81.50",
     "url": "https://www.gtabase.com/grand-theft-auto-v/vehicles/cypher",
-    "image": "https://www.gtabase.com/images/jch-optimize/ng/images_gta-5_vehicles_sports_main_resized_cypher__320x180.webp"
+    "image": "https://www.gtabase.com/images/jch-optimize/ng/images_gta-5_vehicles_sports_main_cypher.webp"
   },
   "prizeRide": {
     "name": "Boor",
@@ -19,7 +19,7 @@
     "topSpeed": "79.95",
     "acceleration": "66.75",
     "url": "https://www.gtabase.com/grand-theft-auto-v/vehicles/boor",
-    "image": "https://www.gtabase.com/images/jch-optimize/ng/images_gta-5_vehicles_off-road_main_resized_boor__320x180.webp"
+    "image": "https://www.gtabase.com/images/jch-optimize/ng/images_gta-5_vehicles_off-road_main_boor.webp"
   },
   "premiumDeluxeMotorsport": [
     {
@@ -31,7 +31,7 @@
       "topSpeed": "67.61",
       "acceleration": "48.75",
       "url": "https://www.gtabase.com/grand-theft-auto-v/vehicles/broadway",
-      "image": "https://www.gtabase.com/images/jch-optimize/ng/images_gta-5_vehicles_muscle_main_resized_broadway__320x180.webp"
+      "image": "https://www.gtabase.com/images/jch-optimize/ng/images_gta-5_vehicles_muscle_main_broadway.webp"
     },
     {
       "name": "Blista Kanjo",
@@ -42,7 +42,7 @@
       "topSpeed": "75.12",
       "acceleration": "80.00",
       "url": "https://www.gtabase.com/grand-theft-auto-v/vehicles/blista-kanjo",
-      "image": "https://www.gtabase.com/images/gta-5/vehicles/compacts/main/resized/blista-kanjo_320x180.jpg"
+      "image": "https://www.gtabase.com/images/gta-5/vehicles/compacts/main/blista-kanjo.jpg"
     },
     {
       "name": "Chavos V6",
@@ -53,7 +53,7 @@
       "topSpeed": "78.34",
       "acceleration": "68.50",
       "url": "https://www.gtabase.com/vehicles/grand-theft-auto-v/chavos-v6",
-      "image": "https://www.gtabase.com/images/jch-optimize/ng/igallery_gta5-database_resized_chavos-v6-1080__320x180.avif"
+      "image": "https://www.gtabase.com/images/jch-optimize/ng/igallery_gta5-database_chavos-v6-1080.avif"
     },
     {
       "name": "Coquette D1",
@@ -64,7 +64,7 @@
       "topSpeed": "85.85",
       "acceleration": "69.50",
       "url": "https://www.gtabase.com/grand-theft-auto-v/vehicles/coquette-d1",
-      "image": "https://www.gtabase.com/images/jch-optimize/ng/images_gta-5_vehicles_sports-classic_resized_coquette-d1__320x180.avif"
+      "image": "https://www.gtabase.com/images/jch-optimize/ng/images_gta-5_vehicles_sports-classic_coquette-d1.avif"
     },
     {
       "name": "Z-Type",
@@ -75,7 +75,7 @@
       "topSpeed": "75.12",
       "acceleration": "55.00",
       "url": "https://www.gtabase.com/grand-theft-auto-v/vehicles/truffade-z-type",
-      "image": "https://www.gtabase.com/images/gta-5/vehicles/sports-classic/main/resized/z-type_320x180.jpg"
+      "image": "https://www.gtabase.com/images/gta-5/vehicles/sports-classic/main/z-type.jpg"
     }
   ],
   "luxuryAutos": [
@@ -88,7 +88,7 @@
       "topSpeed": "91.21",
       "acceleration": "82.50",
       "url": "https://www.gtabase.com/vehicles/grand-theft-auto-v/merula",
-      "image": "https://www.gtabase.com/igallery/gta5-database/resized/merula-360_320x180.jpg"
+      "image": "https://www.gtabase.com/igallery/gta5-database/merula-360.jpg"
     },
     {
       "name": "E-Stride",
@@ -99,7 +99,7 @@
       "topSpeed": "84.78",
       "acceleration": "31.50",
       "url": "https://www.gtabase.com/vehicles/grand-theft-auto-v/e-stride",
-      "image": "https://www.gtabase.com/igallery/gta5-database/resized/e-stride-360_320x180.jpg"
+      "image": "https://www.gtabase.com/igallery/gta5-database/e-stride-360.jpg"
     }
   ],
   "testRides": [
@@ -112,7 +112,7 @@
       "topSpeed": "81.02",
       "acceleration": "77.12",
       "url": "https://www.gtabase.com/grand-theft-auto-v/vehicles/ruiner-zz-8",
-      "image": "https://www.gtabase.com/images/jch-optimize/ng/images_gta-5_vehicles_muscle_main_resized_ruiner-zz-8__320x180.webp"
+      "image": "https://www.gtabase.com/images/jch-optimize/ng/images_gta-5_vehicles_muscle_main_ruiner-zz-8.webp"
     },
     {
       "name": "Adder",
@@ -123,7 +123,7 @@
       "topSpeed": "85.85",
       "acceleration": "80.00",
       "url": "https://www.gtabase.com/grand-theft-auto-v/vehicles/truffade-adder",
-      "image": "https://www.gtabase.com/images/gta-5/vehicles/super/main/resized/adder_320x180.jpg"
+      "image": "https://www.gtabase.com/images/gta-5/vehicles/super/main/adder.jpg"
     },
     {
       "name": "Uranus LozSpeed",
@@ -134,7 +134,7 @@
       "topSpeed": "83.17",
       "acceleration": "81.13",
       "url": "https://www.gtabase.com/vehicles/grand-theft-auto-v/uranus-lozspeed",
-      "image": "https://www.gtabase.com/images/jch-optimize/ng/igallery_gta5-database_resized_uranus-lozspeed-360__320x180.avif"
+      "image": "https://www.gtabase.com/images/jch-optimize/ng/igallery_gta5-database_uranus-lozspeed-360.avif"
     }
   ],
   "premiumTestRide": {
@@ -146,6 +146,6 @@
     "topSpeed": "92.28",
     "acceleration": "88.62",
     "url": "https://www.gtabase.com/grand-theft-auto-v/vehicles/entity-mt",
-    "image": "https://www.gtabase.com/images/jch-optimize/ng/images_gta-5_vehicles_super_main_resized_entity-mt__320x180.webp"
+    "image": "https://www.gtabase.com/images/jch-optimize/ng/images_gta-5_vehicles_super_main_entity-mt.webp"
   }
 }
