@@ -72,6 +72,7 @@ async function scrapeShowrooms() {
       const vehicleObj = {
         name,
         manufacturer: null,
+        acquisition: null, // New field for the dealership
         class: null,
         topSpeed: null,
         acceleration: null,
@@ -123,16 +124,19 @@ async function scrapeShowrooms() {
             });
             const $v = cheerio.load(vehicleData);
 
-            // Extract Manufacturer
-            vehicle.manufacturer = extractStat($v, 'li.field-entry.manufacturer', 'Manufacturer');
+            // Extract Manufacturer (Uses :not(.purchase) to exclude the dealership name)
+            vehicle.manufacturer = extractStat($v, 'li.field-entry.manufacturer:not(.purchase)', 'Manufacturer');
+
+            // Extract Acquisition (Dealership)
+            vehicle.acquisition = extractStat($v, 'li.field-entry.purchase.manufacturer', 'Acquisition');
 
             // Extract Vehicle Class
             vehicle.class = extractStat($v, 'li.field-entry.vehicle-class', 'Vehicle Class');
 
-            // Extract Speed (Using the requested speed.speed selector)
+            // Extract Speed
             vehicle.topSpeed = extractStat($v, 'li.field-entry.speed.speed', 'Speed');
 
-            // Extract Acceleration (Using the requested acceleration.acceleration selector)
+            // Extract Acceleration
             vehicle.acceleration = extractStat($v, 'li.field-entry.acceleration.acceleration', 'Acceleration');
 
             // Wait 1.5 seconds so GitHub Actions doesn't trigger a firewall block
