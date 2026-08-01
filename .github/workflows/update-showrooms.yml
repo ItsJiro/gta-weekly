@@ -29,10 +29,10 @@ jobs:
         run: npm install cheerio axios
 
       - name: Run Scraper
-        run: node scrape.js
+        run: node get-weekly-update.js
 
       - name: Commit and Push Changes
         uses: stefanzweifel/git-auto-commit-action@v7
         with:
-          commit_message: "chore: auto-update showrooms.json"
-          file_pattern: 'showrooms.json'
+          commit_message: "chore: auto-update weekly-update.json"
+          file_pattern: 'weekly-update.json'
