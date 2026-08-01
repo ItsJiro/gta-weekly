@@ -1,4 +1,4 @@
-name: Update GTA Showrooms
+name: Update GTA Showrooms to Supabase
 
 on:
   schedule:
@@ -10,29 +10,20 @@ env:
   SUPABASE_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
 
 jobs:
-  scrape-and-commit:
+  scrape-and-push-supabase:
     runs-on: ubuntu-latest
-
-    permissions:
-      contents: write
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@v4
         with:
           node-version: '24'
 
       - name: Install Dependencies
-        run: npm install cheerio axios
+        run: npm install cheerio axios @supabase/supabase-js dotenv
 
-      - name: Run Scraper
+      - name: Run Scraper and Upload
         run: node get-weekly-update.js
-
-      - name: Commit and Push Changes
-        uses: stefanzweifel/git-auto-commit-action@v7
-        with:
-          commit_message: "chore: auto-update weekly-update.json"
-          file_pattern: 'weekly-update.json'

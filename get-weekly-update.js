@@ -1,13 +1,13 @@
 require('dotenv').config();
 const axios = require('axios');
 const cheerio = require('cheerio');
-const fs = require('fs');
 const { createClient } = require('@supabase/supabase-js');
 
 // --- SUPABASE CONFIGURATION ---
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_KEY;
 const SUPABASE_TABLE_NAME = 'gta-vehicles';
+const SUPABASE_TARGET_TABLE = 'weekly_discounts';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 const TARGET_URL = 'https://www.gtabase.com/gta-online/weekly-update-bonuses-discounts';
@@ -36,7 +36,6 @@ async function getVehicleMapping() {
 }
 
 async function scrapeShowrooms() {
-  // 1. Initialize mapping dictionary before scraping
   const vehicleMapping = await getVehicleMapping();
 
   console.log('Fetching weekly update from GTABase...');
@@ -69,16 +68,19 @@ async function scrapeShowrooms() {
       }
     });
 
-    const weeklyData = {
-      podiumVehicle: null,
-      prizeRide: null,
-      premiumDeluxeMotorsport: [],
-      luxuryAutos: [],
-      testRides: [],
-      premiumTestRide: null,
-      vehicleDiscounts: [],
-      propertyDiscounts: []
-    };
+    // We will collect rows to push to Supabase here
+    const rowsToInsert = [];
+
+    // Helper to push items cleanly
+    function addItem(category, name, discount = null, discountedPrice = null) {
+      const vehicleId = vehicleMapping[name.toLowerCase()] || name;
+      rowsToInsert.push({
+        id: vehicleId,
+        category: category,
+        discount: discount,
+        discountedPrice: discountedPrice
+      });
+    }
 
     // --- 2. PARSE SHOWROOMS & TEST RIDES ---
     const $showroomsSection = $('#showrooms-test-rides').closest('.field-entry');
@@ -95,31 +97,20 @@ async function scrapeShowrooms() {
         name = name.substring(4).trim();
       }
 
-      // Look up the ID. If it fails to find a match, it falls back to the Name string so you can debug what was missed
-      const vehicleId = vehicleMapping[name.toLowerCase()] || name;
-
-      const vehicleObj = { id: vehicleId };
-
       if (typeText.includes('podium vehicle')) {
-        weeklyData.podiumVehicle = vehicleObj;
+        addItem('podiumVehicle', name);
       } else if (typeText.includes('prize ride')) {
-        weeklyData.prizeRide = vehicleObj;
+        addItem('prizeRide', name);
       } else if (typeText.includes('premium deluxe motorsport')) {
-        weeklyData.premiumDeluxeMotorsport.push(vehicleObj);
+        addItem('premiumDeluxeMotorsport', name);
       } else if (typeText.includes('luxury autos')) {
-        weeklyData.luxuryAutos.push(vehicleObj);
+        addItem('luxuryAutos', name);
       } else if (typeText.includes('premium test ride')) {
-        weeklyData.premiumTestRide = vehicleObj;
+        addItem('premiumTestRide', name);
       } else if (typeText.includes('test ride')) {
-        weeklyData.testRides.push(vehicleObj);
+        addItem('testRides', name);
       }
     });
-
-    if (weeklyData.luxuryAutos.length > weeklyData.premiumDeluxeMotorsport.length) {
-        const temp = weeklyData.premiumDeluxeMotorsport;
-        weeklyData.premiumDeluxeMotorsport = weeklyData.luxuryAutos;
-        weeklyData.luxuryAutos = temp;
-    }
 
     // --- 3. PARSE IN-GAME DISCOUNTS ---
     $('li.gta-bonuses.item-scale').each((_, itemEl) => {
@@ -143,30 +134,38 @@ async function scrapeShowrooms() {
       if (!discountPercentage && !discountedPrice) return;
 
       if (url.includes('/vehicles/')) {
-        const vehicleId = vehicleMapping[name.toLowerCase()] || name;
-
-        weeklyData.vehicleDiscounts.push({
-          id: vehicleId,
-          discount: discountPercentage,
-          discountedPrice: discountedPrice
-        });
-
+        addItem('vehicleDiscounts', name, discountPercentage, discountedPrice);
       } else if (url.includes('/properties/') || url.includes('/property-types/')) {
-        // Properties are not in your gta-vehicles database, so we output the Name instead of an ID
-        weeklyData.propertyDiscounts.push({
-          name: name,
-          discount: discountPercentage,
-          discountedPrice: discountedPrice
-        });
+        addItem('propertyDiscounts', name, discountPercentage, discountedPrice);
       }
     });
 
-    // Save final output
-    fs.writeFileSync('weekly-update.json', JSON.stringify(weeklyData, null, 2), 'utf-8');
-    console.log('\n✅ Successfully compiled lightweight data and saved to weekly-update.json');
+    // --- 4. UPLOAD TO SUPABASE (NORMAL TABLE) ---
+    console.log('Clearing old weekly data from Supabase...');
+    // Delete everything currently in the table to reset for the new week
+    const { error: deleteError } = await supabase
+      .from(SUPABASE_TARGET_TABLE)
+      .delete()
+      .neq('id', '0'); // Deletes all rows
+
+    if (deleteError) {
+      console.warn('Warning clearing old data:', deleteError.message);
+    }
+
+    console.log(`Inserting ${rowsToInsert.length} fresh items into Supabase...`);
+    const { error: insertError } = await supabase
+      .from(SUPABASE_TARGET_TABLE)
+      .insert(rowsToInsert);
+
+    if (insertError) {
+      throw new Error(`Supabase insert failed: ${insertError.message}`);
+    }
+
+    console.log('\n✅ Successfully saved normalized weekly data directly to Supabase table!');
 
   } catch (error) {
-    console.error(`❌ Main page scraping failed: ${error.message}`);
+    console.error(`❌ Scraping or database upload failed: ${error.message}`);
+    process.exit(1);
   }
 }
 
