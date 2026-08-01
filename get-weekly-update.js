@@ -75,9 +75,9 @@ async function scrapeShowrooms() {
     function addItem(category, name, discount = null, discountedPrice = null) {
       const vehicleId = vehicleMapping[name.toLowerCase()] || name;
       rowsToInsert.push({
-        id: vehicleId,
-        category: category,
-        discount: discount,
+        ID: vehicleId,
+        Category: category,
+        Discount: discount,
         discountedPrice: discountedPrice
       });
     }
