@@ -5,6 +5,10 @@ on:
     - cron: '0 9 * * 4'
   workflow_dispatch:
 
+env:
+  SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+  SUPABASE_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+
 jobs:
   scrape-and-commit:
     runs-on: ubuntu-latest
