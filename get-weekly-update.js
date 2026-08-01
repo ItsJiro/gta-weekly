@@ -35,49 +35,6 @@ async function getVehicleMapping() {
   return mapping;
 }
 
-<<<<<<< HEAD
-=======
-// Generate Image URL using the Dictionary
-function getImageUrlFromId(vehicleName, mappingDictionary) {
-  if (!vehicleName) return null;
-
-  const normalizedName = vehicleName.toLowerCase().trim();
-  const modelId = mappingDictionary[normalizedName];
-
-  if (!modelId) {
-    console.warn(`⚠️ No ID mapping found for: ${vehicleName}`);
-    return null;
-  }
-
-  // Returns the database image URL
-  return `${supabaseUrl}/storage/v1/object/public/images/vehicles/${modelId}.webp`;
-}
-
-// Helper to prevent getting IP banned by GTABase
-const delay = ms => new Promise(res => setTimeout(res, ms));
-
-// Helper to safely extract text from GTABase's specific list structures
-function extractStat($v, selector, labelToReplace, valueSelector = 'div.field-value') {
-  let text = $v(`${selector} ${valueSelector}`).text().trim();
-  if (!text) {
-      text = $v(selector).text().replace(labelToReplace, '').trim();
-  }
-  return text.replace(/\s+/g, ' ') || "Unknown";
-}
-
-// Helper to recursively remove URL properties from the final object
-function removeUrlsFromData(obj) {
-  if (Array.isArray(obj)) {
-    obj.forEach(removeUrlsFromData);
-  } else if (obj !== null && typeof obj === 'object') {
-    if (obj.hasOwnProperty('url')) {
-      delete obj.url;
-    }
-    Object.values(obj).forEach(removeUrlsFromData);
-  }
-}
-
->>>>>>> 76b780ec0cd7ab603bfe69731750aa9562dbf3b4
 async function scrapeShowrooms() {
   // 1. Initialize mapping dictionary before scraping
   const vehicleMapping = await getVehicleMapping();
@@ -206,11 +163,7 @@ async function scrapeShowrooms() {
 
     // Save final output
     fs.writeFileSync('weekly-update.json', JSON.stringify(weeklyData, null, 2), 'utf-8');
-<<<<<<< HEAD
     console.log('\n✅ Successfully compiled lightweight data and saved to weekly-update.json');
-=======
-    console.log('\n✅ Successfully compiled all data and saved to weekly-update.json');
->>>>>>> 76b780ec0cd7ab603bfe69731750aa9562dbf3b4
 
   } catch (error) {
     console.error(`❌ Main page scraping failed: ${error.message}`);
