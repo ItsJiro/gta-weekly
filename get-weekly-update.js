@@ -294,8 +294,8 @@ async function scrapeShowrooms() {
     removeUrlsFromData(weeklyData);
 
     // Save final output
-    fs.writeFileSync('showrooms.json', JSON.stringify(weeklyData, null, 2), 'utf-8');
-    console.log('\n✅ Successfully compiled all data and saved to showrooms.json');
+    fs.writeFileSync('weekly-update.json', JSON.stringify(weeklyData, null, 2), 'utf-8');
+    console.log('\n✅ Successfully compiled all data and saved to weekly-update.json');
 
   } catch (error) {
     console.error(`❌ Main page scraping failed: ${error.message}`);
