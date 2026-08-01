@@ -5,7 +5,6 @@ const fs = require('fs');
 const { createClient } = require('@supabase/supabase-js');
 
 // --- SUPABASE CONFIGURATION ---
-// Replace these with your actual Supabase project URL, Anon Key, and Table Name
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_KEY;
 const SUPABASE_TABLE_NAME = 'gta-vehicles';
@@ -55,7 +54,7 @@ function getImageUrlFromId(vehicleName, mappingDictionary) {
     return null;
   }
 
-  // Ensure the extension matches what you use in your bucket (.png, .jpg, etc.)
+  // Returns the database image URL
   return `${supabaseUrl}/storage/v1/object/public/images/vehicles/${modelId}.webp`;
 }
 
