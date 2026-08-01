@@ -7,7 +7,7 @@ const { createClient } = require('@supabase/supabase-js');
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_KEY;
 const SUPABASE_TABLE_NAME = 'gta-vehicles';
-const SUPABASE_TARGET_TABLE = 'weekly_discounts';
+const SUPABASE_TARGET_TABLE = 'weekly-update';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 const TARGET_URL = 'https://www.gtabase.com/gta-online/weekly-update-bonuses-discounts';
